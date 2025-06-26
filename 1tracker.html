@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weekly Test Log</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    :root {
+      --primary: #4f8cff;
+      --primary-dark: #1a237e;
+      --secondary: #fff;
+      --accent: #ffb300;
+      --danger: #e53935;
+      --success: #43a047;
+      --bg: #f4f8fb;
+      --bg-gradient: linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%);
+      --card: #fff;
+      --text: #222;
+      --tag-bg: #e3f2fd;
+      --tag-text: #1976d2;
+      --shadow: 0 4px 24px #0002;
+      --nav-bg: #fff;
+      --nav-text: #4f8cff;
+      --nav-active: #1976d2;
+      --nav-shadow: 0 2px 8px #0001;
+      --input-bg: #fff;
+      --input-border: #ccc;
+      --chip-bg: #e3f2fd;
+      --chip-text: #1976d2;
+      --snackbar-bg: #222;
+      --snackbar-text: #fff;
+    }
+    [data-theme="dark"] {
+      --primary: #90caf9;
+      --primary-dark: #0d1333;
+      --secondary: #232a36;
+      --accent: #ffd54f;
+      --danger: #ef9a9a;
+      --success: #81c784;
+      --bg: #181c24;
+      --bg-gradient: linear-gradient(135deg, #232a36 0%, #181c24 100%);
+      --card: #232a36;
+      --text: #f7f7f7;
+      --tag-bg: #1976d2;
+      --tag-text: #fff;
+      --shadow: 0 4px 24px #0006;
+      --nav-bg: #232a36;
+      --nav-text: #90caf9;
+      --nav-active: #ffd54f;
+      --nav-shadow: 0 2px 8px #0006;
+      --input-bg: #232a36;
+      --input-border: #444;
+      --chip-bg: #1976d2;
+      --chip-text: #fff;
+      --snackbar-bg: #fff;
+      --snackbar-text: #232a36;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg-gradient);
+      color: var(--text);
+      font-family: 'Montserrat', Arial, sans-serif;
+      min-height: 100vh;
+    }
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background: var(--nav-bg);
+      color: var(--nav-text);
+      box-shadow: var(--nav-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding-top: 32px;
+      position: sticky;
+      top: 0;
+      min-height: 100vh;
+      z-index: 10;
+      transition: background 0.2s;
+    }
+    .sidebar .logo {
+      font-weight: 700;
+      font-size: 1.3em;
+      color: var(--primary-dark);
+      letter-spacing: 1px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .sidebar .material-icons {
+      vertical-align: middle;
+      color: var(--primary);
+      margin-right: 6px;
+    }
+    .sidebar .nav-link {
+      color: var(--nav-text);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1em;
+      padding: 14px 32px;
+      border-left: 4px solid transparent;
+      transition: color 0.2s, border 0.2s, background 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .sidebar .nav-link.active {
+      color: var(--nav-active);
+      border-left: 4px solid var(--nav-active);
+      background: rgba(79,140,255,0.08);
+    }
+    .sidebar .nav-link:hover {
+      background: rgba(79,140,255,0.12);
+    }
+    .sidebar .dark-toggle {
+      margin: 32px auto 0 auto;
+      background: none;
+      border: none;
+      color: var(--nav-text);
+      font-size: 1.5em;
+      cursor: pointer;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .main-content {
+      flex: 1;
+      padding: 40px 24px 24px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+      min-width: 0;
+      animation: fadeIn 0.7s;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(30px);} to { opacity: 1; transform: none; } }
+    h1, h2, h3 { color: var(--primary-dark); }
+    h1 { font-size: 2.3em; margin-bottom: 0.2em;}
+    h2 { font-size: 1.5em; margin-top: 1.5em;}
+    h3 { font-size: 1.1em; margin-top: 1.2em;}
+    .hero {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    .hero-title {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.2em;
+    }
+    .hero-desc {
+      font-size: 1.2em;
+      color: #555;
+      margin-bottom: 1.5em;
+    }
+    .cta-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 14px 36px;
+      font-size: 1.2em;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0002;
+      transition: background 0.2s;
+    }
+    .cta-btn:hover { background: var(--primary-dark);}
+    .feature-list {
+      display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; margin-top: 2em;
+    }
+    .feature-card {
+      background: var(--bg-gradient);
+      color: var(--primary-dark);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #0001;
+      padding: 18px 20px;
+      min-width: 220px;
+      max-width: 260px;
+      flex: 1 1 220px;
+      text-align: left;
+      font-size: 1em;
+      margin-bottom: 8px;
+    }
+    .feature-card .material-icons { font-size: 1.5em; vertical-align: middle; margin-right: 6px; color: var(--primary);}
+    .quote {
+      font-style: italic;
+      color: var(--accent);
+      margin: 18px 0 0 0;
+      text-align: center;
+      font-size: 1.1em;
+    }
+    form label { display: block; margin-top: 12px; }
+    input, select, textarea {
+      width: 100%; padding: 8px; margin-top: 4px; border-radius: 4px; border: 1px solid var(--input-border);
+      background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 1em;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+    textarea { min-height: 48px; }
+    .mistakes label { display: inline-block; margin-right: 12px; }
+    button, .chip, .icon-btn { cursor: pointer; }
+    button { margin-top: 16px; padding: 10px 24px; background: var(--primary); color: #fff; border: none; border-radius: 4px; font-size: 1em; transition: background 0.2s;}
+    button:hover { background: var(--primary-dark);}
+    .card { background: var(--card); border-radius: 10px; box-shadow: var(--shadow); padding: 18px; margin-bottom: 18px; transition: box-shadow 0.2s;}
+    .card .actions { float: right; }
+    .chip { display: inline-block; background: var(--chip-bg); color: var(--chip-text); border-radius: 3px; padding: 2px 8px; margin-right: 4px; font-size: 0.95em; margin-bottom: 2px;}
+    .chip.custom { background: #ffe082; color: #b28704; }
+    .chip.danger { background: var(--danger); color: #fff; }
+    .chip.success { background: var(--success); color: #fff; }
+    .icon-btn { background: none; border: none; color: var(--primary); font-size: 1.1em; margin-left: 6px; vertical-align: middle;}
+    .icon-btn.danger { color: var(--danger);}
+    .icon-btn:hover { opacity: 0.7;}
+    .flex { display: flex; gap: 12px; flex-wrap: wrap;}
+    .flex-center { display: flex; align-items: center; gap: 8px;}
+    .filter-bar { margin: 18px 0 8px 0; }
+    .fade-in { animation: fadeIn 0.5s; }
+    .section-title { color: var(--primary); margin-top: 1.5em; }
+    .about-section { margin-top: 2em; }
+    .about-section h2 { margin-top: 0; }
+    .snackbar {
+      position: fixed;
+      left: 50%;
+      bottom: 32px;
+      transform: translateX(-50%);
+      background: var(--snackbar-bg);
+      color: var(--snackbar-text);
+      padding: 14px 32px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #0004;
+      font-size: 1.1em;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .snackbar.show { opacity: 1; pointer-events: auto; }
+    @media (max-width: 900px) {
+      .layout { flex-direction: column; }
+      .sidebar { flex-direction: row; width: 100%; min-height: 0; height: 60px; padding-top: 0; align-items: center; }
+      .sidebar .logo { margin: 0 24px 0 0; }
+      .sidebar .nav-link { padding: 10px 16px; font-size: 1em; border-left: none; border-bottom: 3px solid transparent;}
+      .sidebar .nav-link.active { border-left: none; border-bottom: 3px solid var(--nav-active);}
+      .sidebar .dark-toggle { margin: 0 0 0 auto; }
+      .main-content { padding: 24px 6px 6px 6px; }
+    }
+    @media (max-width: 600px) {
+      .main-content { padding: 8px 2px; }
+      .feature-list { flex-direction: column; align-items: center;}
+      .feature-card { min-width: 90vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <div class="logo">
+        <span class="material-icons">event_note</span>
+        TestLog
+      </div>
+      <span class="nav-link active" id="nav-home" onclick="showPage('home')"><span class="material-icons">home</span>Home</span>
+      <span class="nav-link" id="nav-app" onclick="showPage('app')"><span class="material-icons">edit_note</span>Log</span>
+      <span class="nav-link" id="nav-analytics" onclick="showPage('analytics')"><span class="material-icons">insights</span>Analytics</span>
+      <span class="nav-link" id="nav-about" onclick="showPage('about')"><span class="material-icons">info</span>About</span>
+      <button class="dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">
+        <span class="material-icons" id="darkIcon">dark_mode</span>
+      </button>
+    </nav>
+    <main class="main-content">
+      <div id="page-home">
+        <div class="hero">
+          <div class="hero-title">Weekly Test Log</div>
+          <div class="hero-desc">
+            Track your test scores, analyze mistakes, reflect weekly, and visualize your progress.<br>
+            <b>Smarter prep, better results!</b>
+          </div>
+          <button class="cta-btn" onclick="showPage('app')">Start Logging</button>
+        </div>
+        <div class="feature-list">
+          <div class="feature-card"><span class="material-icons">edit_note</span> Log test scores, time, and mistakes</div>
+          <div class="feature-card"><span class="material-icons">category</span> Custom mistake tags & color-coded chips</div>
+          <div class="feature-card"><span class="material-icons">insights</span> Progress charts & analytics</div>
+          <div class="feature-card"><span class="material-icons">lightbulb</span> Weekly reflection & monthly summary</div>
+          <div class="feature-card"><span class="material-icons">cloud_download</span> Export/Import your data</div>
+          <div class="feature-card"><span class="material-icons">dark_mode</span> Beautiful dark mode</div>
+        </div>
+        <div class="quote" id="home-quote"></div>
+      </div>
+      <div id="page-app" style="display:none">
+        <h1 class="section-title">🗓️ Weekly Test Log</h1>
+        <div class="quote" id="quote"></div>
+        <form id="testForm">
+          <label>Date: <input type="date" name="date" required></label>
+          <label>Subject:
+            <select name="subject" required>
+              <option value="">Select</option>
+              <option>Math</option>
+              <option>Physics</option>
+              <option>Chemistry</option>
+              <option>Biology</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>Test Name: <input type="text" name="testName" required></label>
+          <label>Total Marks: <input type="number" name="totalMarks" required min="1"></label>
+          <label>Score: <input type="number" name="score" required min="0"></label>
+          <label>Time Spent (minutes): <input type="number" name="timeSpent" min="1"></label>
+          <label>Difficulty:
+            <select name="difficulty">
+              <option value="">Select</option>
+              <option>Easy</option>
+              <option>Medium</option>
+              <option>Hard</option>
+            </select>
+          </label>
+          <div class="mistakes">
+            <label><input type="checkbox" name="mistakes" value="Careless"> Careless</label>
+            <label><input type="checkbox" name="mistakes" value="Conceptual"> Conceptual</label>
+            <label><input type="checkbox" name="mistakes" value="Time management"> Time management</label>
+            <label><input type="checkbox" name="mistakes" value="Silly calculation"> Silly calculation</label>
+            <label><input type="checkbox" name="mistakes" value="Didn’t revise / forgot formula"> Didn’t revise / forgot formula</label>
+          </div>
+          <label>Add Custom Mistake Tag:
+            <input type="text" id="customMistake" placeholder="e.g. Misread question">
+            <button type="button" onclick="addCustomMistake()">Add</button>
+          </label>
+          <div id="customMistakeTags" class="flex"></div>
+          <button type="submit">Add Test Log</button>
+        </form>
+        <div class="filter-bar flex-center">
+          <input type="text" id="search" placeholder="Search by subject/test name..." oninput="renderLogs()">
+          <select id="filterSubject" onchange="renderLogs()">
+            <option value="">All Subjects</option>
+            <option>Math</option>
+            <option>Physics</option>
+            <option>Chemistry</option>
+            <option>Biology</option>
+            <option>Other</option>
+          </select>
+          <select id="filterDifficulty" onchange="renderLogs()">
+            <option value="">All Difficulties</option>
+            <option>Easy</option>
+            <option>Medium</option>
+            <option>Hard</option>
+          </select>
+          <button onclick="exportData()">Export</button>
+          <button onclick="document.getElementById('importFile').click()">Import</button>
+          <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
+        </div>
+        <div id="logs"></div>
+        <div class="card fade-in">
+          <h2>💭 Weekly Reflection</h2>
+          <label>What went wrong this week?
+            <textarea id="wentWrong"></textarea>
+          </label>
+          <label>What did I improve on?
+            <textarea id="improved"></textarea>
+          </label>
+          <label>1 thing I will change in the next test?
+            <textarea id="changeNext"></textarea>
+          </label>
+          <button onclick="saveReflection()">Save Reflection</button>
+        </div>
+        <div class="card fade-in">
+          <h2>🧩 Monthly Summary</h2>
+          <label>What I learned this month:
+            <textarea id="learned"></textarea>
+          </label>
+          <label>My new exam strategy:
+            <textarea id="strategy"></textarea>
+          </label>
+          <button onclick="saveMonthly()">Save Monthly Summary</button>
+          <div id="monthlySummary"></div>
+        </div>
+      </div>
+      <div id="page-analytics" style="display:none">
+        <h1 class="section-title">📈 Analytics & Progress</h1>
+        <canvas id="scoreChart" height="120"></canvas>
+        <div id="analyticsSummary"></div>
+        <div id="mistakeStats"></div>
+      </div>
+      <div class="about-section" id="page-about" style="display:none">
+        <h2>About Weekly Test Log</h2>
+        <p>
+          <b>Weekly Test Log</b> is a free, privacy-friendly web app to help students track their test scores, analyze mistakes, reflect on progress, and improve exam strategies. All your data stays in your browser and can be exported or imported anytime.
+        </p>
+        <h3>Features</h3>
+        <ul>
+          <li>Log test scores, time, and mistakes</li>
+          <li>Custom mistake tags</li>
+          <li>Weekly reflection and monthly summary</li>
+          <li>Progress charts and analytics</li>
+          <li>Export/Import data</li>
+          <li>Dark mode and responsive design</li>
+        </ul>
+        <h3>Made with ❤️ for learners everywhere.</h3>
+        <p style="color:#888;font-size:0.95em;">No ads. No tracking. 100% free and open source.</p>
+      </div>
+      <div id="snackbar" class="snackbar"></div>
+    </main>
+  </div>
+  <script>
+    // --- SPA Navigation ---
+    function showPage(page) {
+      ["home", "app", "analytics", "about"].forEach(p => {
+        document.getElementById("page-" + p).style.display = (p === page) ? "" : "none";
+        document.getElementById("nav-" + p).classList.toggle("active", p === page);
+      });
+      if (page === "app") renderAll();
+      if (page === "analytics") renderAnalytics();
+      if (page === "home") document.getElementById("home-quote").textContent = quotes[Math.floor(Math.random()*quotes.length)];
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // --- Motivational Quotes ---
+    const quotes = [
+      "Success is the sum of small efforts, repeated day in and day out.",
+      "Mistakes are proof that you are trying.",
+      "Every test is a step closer to your goal.",
+      "Progress, not perfection.",
+      "Believe in yourself and all that you are.",
+      "The only real mistake is the one from which we learn nothing."
+    ];
+    document.getElementById("quote").textContent = quotes[Math.floor(Math.random()*quotes.length)];
+    document.getElementById("home-quote").textContent = quotes[Math.floor(Math.random()*quotes.length)];
+
+    // --- Dark Mode ---
+    function toggleDarkMode() {
+      const theme = document.documentElement.getAttribute("data-theme");
+      if (theme === "dark") {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("theme", "light");
+        document.getElementById("darkIcon").textContent = "dark_mode";
+      } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");
+        document.getElementById("darkIcon").textContent = "light_mode";
+      }
+    }
+    if (localStorage.getItem("theme") === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      document.getElementById("darkIcon").textContent = "light_mode";
+    }
+
+    // --- Snackbar ---
+    let snackbarTimeout;
+    function showSnackbar(msg, undoFn) {
+      const bar = document.getElementById("snackbar");
+      bar.innerHTML = msg + (undoFn ? ` <button onclick="undoDelete()" style="margin-left:18px;background:var(--primary);color:#fff;border:none;padding:4px 14px;border-radius:4px;cursor:pointer;">Undo</button>` : "");
+      bar.classList.add("show");
+      clearTimeout(snackbarTimeout);
+      snackbarTimeout = setTimeout(() => bar.classList.remove("show"), 3500);
+      if (undoFn) window._undoDelete = undoFn;
+    }
+    function undoDelete() {
+      if (window._undoDelete) window._undoDelete();
+      document.getElementById("snackbar").classList.remove("show");
+      window._undoDelete = null;
+    }
+
+    // --- Data Handling ---
+    const logsKey = "testLogs4";
+    const reflectionKey = "weeklyReflection4";
+    const monthlyKey = "monthlySummary4";
+    const customMistakeKey = "customMistakes4";
+    let lastDeletedLog = null;
+
+    function getLogs() { return JSON.parse(localStorage.getItem(logsKey) || "[]"); }
+    function saveLogs(logs) { localStorage.setItem(logsKey, JSON.stringify(logs)); }
+    function getReflection() { return JSON.parse(localStorage.getItem(reflectionKey) || '{"wentWrong":"","improved":"","changeNext":""}'); }
+    function saveReflection() {
+      const reflection = {
+        wentWrong: document.getElementById("wentWrong").value,
+        improved: document.getElementById("improved").value,
+        changeNext: document.getElementById("changeNext").value
+      };
+      localStorage.setItem(reflectionKey, JSON.stringify(reflection));
+      showSnackbar("Reflection saved!");
+    }
+    function getMonthly() { return JSON.parse(localStorage.getItem(monthlyKey) || '{"learned":"","strategy":""}'); }
+    function saveMonthly() {
+      const monthly = {
+        learned: document.getElementById("learned").value,
+        strategy: document.getElementById("strategy").value
+      };
+      localStorage.setItem(monthlyKey, JSON.stringify(monthly));
+      showSnackbar("Monthly summary saved!");
+      renderMonthlySummary();
+    }
+    function getCustomMistakes() { return JSON.parse(localStorage.getItem(customMistakeKey) || "[]"); }
+    function saveCustomMistakes(tags) { localStorage.setItem(customMistakeKey, JSON.stringify(tags)); }
+
+    // --- Custom Mistake Tags ---
+    function addCustomMistake() {
+      const val = document.getElementById("customMistake").value.trim();
+      if (!val) return;
+      let tags = getCustomMistakes();
+      if (!tags.includes(val)) {
+        tags.push(val);
+        saveCustomMistakes(tags);
+        renderCustomMistakeTags();
+      }
+      document.getElementById("customMistake").value = "";
+    }
+    function removeCustomMistake(tag) {
+      let tags = getCustomMistakes().filter(t => t !== tag);
+      saveCustomMistakes(tags);
+      renderCustomMistakeTags();
+    }
+    function renderCustomMistakeTags() {
+      const tags = getCustomMistakes();
+      const div = document.getElementById("customMistakeTags");
+      div.innerHTML = "";
+      tags.forEach(tag => {
+        const chip = document.createElement("span");
+        chip.className = "chip custom";
+        chip.textContent = tag;
+        chip.title = "Click to remove";
+        chip.onclick = () => removeCustomMistake(tag);
+        div.appendChild(chip);
+      });
+    }
+
+    // --- Logs ---
+    function renderLogs() {
+      const logs = getLogs();
+      const search = document.getElementById("search").value.toLowerCase();
+      const subject = document.getElementById("filterSubject").value;
+      const diff = document.getElementById("filterDifficulty").value;
+      let filtered = logs.filter(log =>
+        (!search || log.subject.toLowerCase().includes(search) || log.testName.toLowerCase().includes(search)) &&
+        (!subject || log.subject === subject) &&
+        (!diff || log.difficulty === diff)
+      );
+      const logsDiv = document.getElementById("logs");
+      logsDiv.innerHTML = "";
+      if (!filtered.length) {
+        logsDiv.innerHTML = "<div class='card'>No logs found.</div>";
+        return;
+      }
+      filtered.forEach((log, idx) => {
+        const card = document.createElement("div");
+        card.className = "card fade-in";
+        card.innerHTML = `
+          <div class="actions">
+            <button class="icon-btn" title="Edit" onclick="editLog(${log.id})"><span class="material-icons">edit</span></button>
+            <button class="icon-btn danger" title="Delete" onclick="deleteLog(${log.id})"><span class="material-icons">delete</span></button>
+          </div>
+          <b>${log.date}</b> | <b>${log.subject}</b> | ${log.testName} <br>
+          <span class="chip success">Score: ${log.score}/${log.totalMarks}</span>
+          <span class="chip">${log.difficulty || "—"}</span>
+          <span class="chip">${log.timeSpent ? log.timeSpent + " min" : ""}</span>
+          <div>
+            ${log.mistakes.map(m => `<span class="chip">${m}</span>`).join("")}
+            ${log.customMistakes.map(m => `<span class="chip custom">${m}</span>`).join("")}
+          </div>
+        `;
+        logsDiv.appendChild(card);
+      });
+    }
+
+    // --- Edit/Delete Logs ---
+    function editLog(id) {
+      const logs = getLogs();
+      const log = logs.find(l => l.id === id);
+      if (!log) return;
+      // Fill form
+      const form = document.getElementById("testForm");
+      form.date.value = log.date;
+      form.subject.value = log.subject;
+      form.testName.value = log.testName;
+      form.totalMarks.value = log.totalMarks;
+      form.score.value = log.score;
+      form.timeSpent.value = log.timeSpent || "";
+      form.difficulty.value = log.difficulty || "";
+      // Mistakes
+      Array.from(form.mistakes).forEach(cb => cb.checked = log.mistakes.includes(cb.value));
+      // Custom mistakes
+      let tags = getCustomMistakes();
+      log.customMistakes.forEach(tag => {
+        if (!tags.includes(tag)) tags.push(tag);
+      });
+      saveCustomMistakes(tags);
+      renderCustomMistakeTags();
+      // Remove old log
+      saveLogs(logs.filter(l => l.id !== id));
+      renderLogs();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    function deleteLog(id) {
+      const logs = getLogs();
+      const idx = logs.findIndex(l => l.id === id);
+      if (idx === -1) return;
+      lastDeletedLog = logs[idx];
+      logs.splice(idx, 1);
+      saveLogs(logs);
+      renderLogs();
+      showSnackbar("Log deleted.", undoDelete);
+    }
+    function undoDelete() {
+      if (lastDeletedLog) {
+        let logs = getLogs();
+        logs.unshift(lastDeletedLog);
+        saveLogs(logs);
+        renderLogs();
+        lastDeletedLog = null;
+      }
+    }
+
+    // --- Export/Import ---
+    function exportData() {
+      const data = {
+        logs: getLogs(),
+        reflection: getReflection(),
+        monthly: getMonthly(),
+        customMistakes: getCustomMistakes()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "weekly-test-log-backup.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      showSnackbar("Data exported!");
+    }
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.logs) saveLogs(data.logs);
+          if (data.reflection) localStorage.setItem(reflectionKey, JSON.stringify(data.reflection));
+          if (data.monthly) localStorage.setItem(monthlyKey, JSON.stringify(data.monthly));
+          if (data.customMistakes) saveCustomMistakes(data.customMistakes);
+          renderAll();
+          showSnackbar("Data imported!");
+        } catch {
+          showSnackbar("Invalid file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // --- Reflection/Monthly ---
+    function renderReflection() {
+      const r = getReflection();
+      document.getElementById("wentWrong").value = r.wentWrong;
+      document.getElementById("improved").value = r.improved;
+      document.getElementById("changeNext").value = r.changeNext;
+    }
+    function renderMonthlySummary() {
+      const m = getMonthly();
+      document.getElementById("learned").value = m.learned;
+      document.getElementById("strategy").value = m.strategy;
+      document.getElementById("monthlySummary").innerHTML = `
+        <b>What I learned this month:</b> ${m.learned ? m.learned : "—"}<br>
+        <b>My new exam strategy:</b> ${m.strategy ? m.strategy : "—"}
+      `;
+    }
+
+    // --- Form Submission ---
+    document.getElementById("testForm").onsubmit = function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const log = {
+        id: Date.now(),
+        date: form.date.value,
+        subject: form.subject.value,
+        testName: form.testName.value,
+        totalMarks: form.totalMarks.value,
+        score: form.score.value,
+        timeSpent: form.timeSpent.value,
+        difficulty: form.difficulty.value,
+        mistakes: Array.from(form.mistakes).filter(cb => cb.checked).map(cb => cb.value),
+        customMistakes: getCustomMistakes()
+      };
+      let logs = getLogs();
+      logs.unshift(log);
+      saveLogs(logs);
+      // Reset form
+      form.reset();
+      saveCustomMistakes([]);
+      renderCustomMistakeTags();
+      renderLogs();
+      showSnackbar("Test log added!");
+    };
+
+    // --- Analytics ---
+    let chart;
+    function renderAnalytics() {
+      const logs = getLogs();
+      const analyticsDiv = document.getElementById("analyticsSummary");
+      if (!logs.length) {
+        analyticsDiv.innerHTML = "<div class='card'>No data to analyze yet.</div>";
+        document.getElementById("mistakeStats").innerHTML = "";
+        if (chart) chart.destroy();
+        return;
+      }
+      // Score trend
+      const ctx = document.getElementById("scoreChart").getContext("2d");
+      if (chart) chart.destroy();
+      const data = logs.slice().reverse();
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: data.map(l => l.date),
+          datasets: [
+            {
+              label: "Score",
+              data: data.map(l => Number(l.score)),
+              borderColor: "#4f8cff",
+              backgroundColor: "#e3f2fd",
+              tension: 0.2,
+              fill: false
+            },
+            {
+              label: "Mistakes",
+              data: data.map(l => l.mistakes.length + l.customMistakes.length),
+              borderColor: "#e53935",
+              backgroundColor: "#ffcdd2",
+              tension: 0.2,
+              fill: false,
+              yAxisID: "y1"
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: true } },
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: "Score" } },
+            y1: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Mistakes" } }
+          }
+        }
+      });
+      // Stats
+      const avgScore = (logs.reduce((a, l) => a + Number(l.score), 0) / logs.length).toFixed(2);
+      const avgMistakes = (logs.reduce((a, l) => a + l.mistakes.length + l.customMistakes.length, 0) / logs.length).toFixed(2);
+      const avgTime = (logs.reduce((a, l) => a + Number(l.timeSpent || 0), 0) / logs.length).toFixed(1);
+      analyticsDiv.innerHTML = `
+        <div class="card">
+          <b>Average Score:</b> <span class="chip success">${avgScore}</span>
+          <b>Average Mistakes per Test:</b> <span class="chip danger">${avgMistakes}</span>
+          <b>Average Time Spent:</b> <span class="chip">${avgTime} min</span>
+        </div>
+      `;
+      // Mistake stats
+      const freq = {};
+      logs.forEach(l => {
+        l.mistakes.forEach(m => freq[m] = (freq[m]||0)+1);
+        l.customMistakes.forEach(m => freq[m] = (freq[m]||0)+1);
+      });
+      const topMistakes = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,5);
+      document.getElementById("mistakeStats").innerHTML = `
+        <div class="card">
+          <b>Top Mistake Types:</b>
+          ${topMistakes.length ? topMistakes.map(([m,c])=>`<span class="chip">${m} (${c})</span>`).join("") : "—"}
+        </div>
+      `;
+    }
+
+    // --- Initial Render ---
+    function renderAll() {
+      renderCustomMistakeTags();
+      renderLogs();
+      renderReflection();
+      renderMonthlySummary();
+    }
+    renderAll();
+  </script>
+</body>
+</html>
